@@ -84,7 +84,7 @@ while True:
     
     g = gbl.builtin()
     g["home"] = home
-    g["ashrc"] = ashsrc().read()
+
     q =  input(prefix)
     q = parse.builtin(q,v,g)
     
@@ -152,6 +152,8 @@ while True:
       # % will be for globals
       if q == ("%vars%"):
         show.builtin([v])
+      if q == ("%ashrc%"):
+        show.builtin([ashrc])
       elif q == "%globals%":
         show.builtin([g])
       else:
