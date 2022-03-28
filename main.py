@@ -84,7 +84,7 @@ while True:
     
     g = gbl.builtin()
     g["home"] = home
-    
+    g["ashrc"] = ashsrc().read()
     q =  input(prefix)
     q = parse.builtin(q,v,g)
     
