@@ -192,8 +192,9 @@ while True:
         found = False
         slss = {}
         for sls in ashrc["symlinks"]:
+          slss[sls] = []
           for f in os.listdir(sls):
-            slss[sls] = f
+            slss[sls].append(f)
         for i in slss:
           if found != True:
             if cmd in slss[i]:
