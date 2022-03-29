@@ -231,8 +231,8 @@ while True:
                   aargs.append(parg)
                 os.system(f"python3 {i}/{cmd}.py {joiner(aargs)}")
                 found = True
-          if found == False:
-            show.builtin([f"Unable to find `{cmd}`"])
+      if found == False:
+        show.builtin([f"Unable to find `{cmd}`"])
 
   except KeyboardInterrupt:
     show.builtin(["\nPlease type `exit` to exit"])
