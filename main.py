@@ -234,13 +234,10 @@ while True:
               if found != True:
                 if cmd in slss[i]:
                   os.system(f"""{pre}{i}/{cmd}{post} {joiner(aargs)}""")
-                  print("found")
                   glfo = True
                   found = True
                 elif cmd + ending in slss[i]:
-                  print(f"""[{pre}{i}/{cmd}{ending} {post} {joiner(aargs)}]""")
                   os.system(f"""{pre}{i}/{cmd}{ending} {post} {joiner(aargs)}""")
-                  print("found 1")
                   glfo = True
                   found = True
                 elif cmd + """.py""" in slss[i]:
