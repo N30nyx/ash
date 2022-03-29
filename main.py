@@ -238,8 +238,8 @@ while True:
             pre = """"""
             post = """"""
             if sys.platform.startswith("""win"""):
-              pre = 'cmd /c "'
-              post = '"'
+              pre = 'cmd /c '
+              post = ''
             else:
               pre = """"""
               post = """"""
