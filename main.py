@@ -231,7 +231,8 @@ while True:
                 os.system(f"""{pre}{i}/{cmd}{post} {joiner(aargs)}""")
                 found = True
               elif cmd + ending in slss[i]:
-                os.system(f"""{pre}{i}/{cmd}{post}{ending} {joiner(aargs)}""")
+                os.system(f"""{pre}{i}/{cmd}{ending} {post} 
+{joiner(aargs)}""")
                 found = True
               elif cmd + """.py""" in slss[i]:
                 pargs = [str(Path.cwd()),"""ash"""]
