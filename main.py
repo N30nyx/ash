@@ -29,7 +29,7 @@ def ashsrc(t=None,d=None):
     
     return x
 
-def is_there(p=os.getcwd(),f=None):
+def is_there(p=Path.cwd(),f=None):
   files = []
   for file in os.listdir(p):
     files.append(file)
@@ -73,31 +73,22 @@ try:
   os.system(ashrc["startup"])
 except Exception as et:
   print(f"Failed to load {str(Path.home())}/ashrc.json\nERROR: {et}")
-prefix = "~"
+prefixer = "~> "
 try:
-  prefix = json.load(ashsrc())["prefix"]
-except:
-  prefix = str(os.getcwd() + " ~ ")
+  prefixer = json.load(ashsrc())["prefix"]
+except KeyError:
+  prefixer = str("%path% ~ ")
 while True:
   try:
     home = str(Path.home())
     
     g = gbl.builtin()
     g["home"] = home
+    g["path"] = str(Path.cwd())
 
+
+    prefix = parse.builtin(prefixer,v,g,"arg")
     q =  input(prefix)
-    q = parse.builtin(q,v,g)
-    
-    g["globals"] = str(g)
-    ashrc = json.load(ashsrc())
-    for gbli in ashrc["globals"]:
-      g[gbli] = ashrc["globals"][gbli]
-    
-
-    
-      
-      
-  
     try:
       cmd = q.split(" ")[0]
     except IndexError:
@@ -114,6 +105,34 @@ while True:
       aargs = q.split(" ")[1:]
     except IndexError:
       aargs = []
+    q = parse.builtin(q,v,g,arg)
+    try:
+      cmd = q.split(" ")[0]
+    except IndexError:
+      cmd = ""
+    try:
+      arg = q.split(" ")[1]
+    except IndexError:
+      arg = ""
+    try:
+      args = q.split(" ")[2:]
+    except IndexError:
+      args = []
+    try:
+      aargs = q.split(" ")[1:]
+    except IndexError:
+      aargs = []  
+    g["globals"] = str(g)
+    ashrc = json.load(ashsrc())
+    for gbli in ashrc["globals"]:
+      g[gbli] = ashrc["globals"][gbli]
+    
+
+    
+      
+      
+  
+
     
     if q.startswith("exit") or q.startswith("quit"):
       if arg == "":
@@ -121,7 +140,8 @@ while True:
       else:
         exit(int(arg))
       
-      
+    elif cmd in ["cd"]:
+      os.chdir(arg)
     elif q.startswith("#"):
       q = ""
     elif q.startswith("@"):
@@ -136,6 +156,7 @@ while True:
         ashrcm.builtin([ashsrc,arg,joiner(args)])
       if cmd in ["@reload"]:
         os.execv(sys.executable, ['python'] + sys.argv)
+
     elif q.startswith("$"):
       # $ will be var defining
       
@@ -152,7 +173,7 @@ while True:
       # % will be for globals
       if q == ("%vars%"):
         show.builtin([v])
-      if q == ("%ashrc%"):
+      elif q == ("%ashrc%"):
         show.builtin([ashrc])
       elif q == "%globals%":
         show.builtin([g])
@@ -166,42 +187,54 @@ while True:
       else:
         os.system(q)
     else:
-      ending = ""
+      endings = ""
       start = ""
       if sys.platform.startswith("win"):
-        ending = ".bat"
+        endings = [".bat",".ps1",".exe"]
         start = ""
       else:
-        ending = ".sh"
+        endings = [".sh"]
         start = "bash "
       lfs = []
       for lf in os.listdir(os.getcwd()):
         lfs.append(lf)
-      if cmd in lfs or cmd + ending in lfs:
-        if cmd.endswith(ending):
-          os.system(f"{start}{cmd}{joiner(aargs)}")
-          
-
-
-
-        elif cmd + ending in lfs:
-          os.system(f"{start}{cmd}{ending}{joiner(aargs)}")
+      for ending in endings:
+        if cmd in lfs or cmd + ending in lfs:
+          if cmd.endswith(ending):
+            os.system(f"{start}{cmd}{joiner(aargs)}")
+            
+  
+  
+  
+          elif cmd + ending in lfs:
+            os.system(f"{start}{cmd}{ending}{joiner(aargs)}")
+          else:
+            show.builtin([f"Did you mean `./{cmd}` ?"])
         else:
-          show.builtin([f"Did you mean `./{cmd}` ?"])
-      else:
-        found = False
-        slss = {}
-        for sls in ashrc["symlinks"]:
-          slss[sls] = []
-          for f in os.listdir(sls):
-            slss[sls].append(f)
-        for i in slss:
-          if found != True:
-            if cmd in slss[i]:
-              os.system(f"{i}/{cmd} {joiner(aargs)}")
-              found = True
-        if found == False:
-          show.builtin([f"Unable to find `{cmd}`"])
-          
+          found = False
+          slss = {}
+          for sls in ashrc["symlinks"]:
+            slss[sls] = []
+            for f in os.listdir(sls):
+              slss[sls].append(f)
+          for i in slss:
+            if found != True:
+              if cmd in slss[i]:
+                os.system(f"{i}/{cmd} {joiner(aargs)}")
+                found = True
+              elif cmd + ending in slss[i]:
+                os.system(f"{i}/{cmd}{ending} {joiner(aargs)}")
+                found = True
+              elif cmd + ".py" in slss[i]:
+                pargs = [str(Path.cwd()),"ash"]
+                for parg in pargs:
+                  aargs.append(parg)
+                os.system(f"python3 {i}/{cmd}.py {joiner(aargs)}")
+                found = True
+          if found == False:
+            show.builtin([f"Unable to find `{cmd}`"])
+
+  except KeyboardInterrupt:
+    show.builtin(["\nPlease type `exit` to exit"])
   except Exception as e:
     show.builtin(["ERROR: " + str(e)])
