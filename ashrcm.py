@@ -9,7 +9,10 @@ def builtin(args):
   elif k.startswith("!add:"):
     k = k.replace("!add:","")
     v = args[2]
-    d[k].append(v)
+    if v in d[k]:
+      d[k].remove(v)
+    else:
+      d[k].append(v)
   else:
     v = args[2]
     
