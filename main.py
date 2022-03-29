@@ -183,9 +183,9 @@ while True:
         if q.replace("""%""","""""") in g:
           show.builtin([g[q.replace("""%""","""""")]])
     elif q.startswith("""./"""):
-      f = q.replace("""./""","""""")
+      f = cmd.replace("""./""","""""")
       if sys.platform.startswith("""win"""):
-        os.system(f"""{f[0]} {joiner(aargs)}""")
+        os.system(f"""{f} {joiner(aargs)}""")
       else:
         os.system(q)
     else:
