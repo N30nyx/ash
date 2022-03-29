@@ -139,6 +139,8 @@ while True:
         exit()
       else:
         exit(int(arg))
+    elif q == "" or q == '':
+      ok = "frenchbabyseal"
       
     elif cmd in ["""cd"""]:
       os.chdir(arg)
