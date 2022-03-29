@@ -198,7 +198,7 @@ while True:
       endings = """"""
       start = """"""
       if sys.platform.startswith("""win"""):
-        endings = [""".bat""",""".ps1""",""".exe"""]
+        endings = [""".bat""",""".ps1""",""".exe""",""".cmd"""]
         start = """"""
       else:
         endings = [""".sh"""]
