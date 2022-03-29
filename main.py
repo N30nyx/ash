@@ -4,8 +4,27 @@ import g as gbl
 from pathlib import Path
 import json
 import sys
+import subprocess
 
 # get ~ and .bashrc but for ash
+def execute(c):
+    process = None
+    try:
+        bashCommand = c
+        bc = bashCommand.split()
+        nc = []
+        for item in bc:
+            item = item.replace("%20"," ")
+            nc.append(item)
+        process = subprocess.run(c.replace("%20"," "), check=True,text=True)
+        o = process.stdout
+        if o != None:
+            print(o)
+    except Exception as e:
+        if str(e).endswith("1.") == False:
+
+            print(f"SHELL ERROR: `{e}`")
+    return
 
 def ashsrc(t=None,d=None):
 
@@ -54,7 +73,7 @@ v = {}
 try:
 
   if ashsrc().read() in ['',""""""]:
-    os.system("""echo {} >> """ + str(Path.home()) + """/ashrc.json""")
+    execute("""echo {} >> """ + str(Path.home()) + """/ashrc.json""")
 
   ashrc = json.load(ashsrc())
   if """symlinks""" not in ashrc:
@@ -74,7 +93,7 @@ try:
     ashsrc("""d""",ashrc)
     ashrc = json.load(ashsrc())
 
-  os.system(ashrc["""startup"""])
+  execute(ashrc["""startup"""])
 except Exception as et:
   print(f"""Failed to load {str(Path.home())}/ashrc.json\nERROR: {et}""")
 prefixer = """~> """
@@ -98,12 +117,13 @@ while True:
       g[gbli] = ashrc["""globals"""][gbli]
     if started == False:
         poststart = parse.builtin(json.load(ashsrc())["""poststart"""],v,g,"""arg""")
-        os.system(poststart)
+        execute(poststart)
         started = True
 
     prefix = parse.builtin(prefixer,v,g,"""arg""")
     q =  input(prefix)
     oq = q
+
 
     try:
       cmd = q.split(""" """)[0]
@@ -121,6 +141,7 @@ while True:
       aargs = q.split(""" """)[1:]
     except IndexError:
       aargs = []
+
     q = parse.builtin(q,v,g,arg)
     try:
       cmd = q.split(""" """)[0]
@@ -138,6 +159,7 @@ while True:
       aargs = q.split(""" """)[1:]
     except IndexError:
       aargs = []
+    q = q.replace("%20"," ")
 
 
 
@@ -174,7 +196,7 @@ while True:
       if cmd in ["""@reload"""]:
         os.execv(sys.executable, ['python'] + sys.argv)
       if cmd in ["@update"]:
-        os.system(f"cd {stdir} && git pull")
+        execute(f"cd {stdir} && git pull")
 
     elif q.startswith("""$"""):
       # $ will be var defining
@@ -202,9 +224,9 @@ while True:
     elif q.startswith("""./"""):
       f = cmd.replace("""./""","""""")
       if sys.platform.startswith("""win"""):
-        os.system(f"""{f} {joiner(aargs)}""")
+        execute(f"""{f} {joiner(aargs)}""")
       else:
-        os.system(q)
+        execute(q)
     else:
       endings = """"""
       start = """"""
@@ -222,14 +244,14 @@ while True:
         if glfo != True:
           if cmd in lfs or cmd + ending in lfs:
             if cmd.endswith(ending):
-              os.system(f"""{start}{cmd}{joiner(aargs)}""")
+              execute(f"""{start}{cmd}{joiner(aargs)}""")
               glfo = True
 
 
 
 
             elif cmd + ending in lfs:
-              os.system(f"""{start}{cmd}{ending}{joiner(aargs)}""")
+              execute(f"""{start}{cmd}{ending}{joiner(aargs)}""")
               glfo = True
             else:
               show.builtin([f"""Did you mean `./{cmd}` ?"""])
@@ -238,8 +260,8 @@ while True:
             pre = """"""
             post = """"""
             if sys.platform.startswith("""win"""):
-              pre = 'cmd /c '
-              post = ''
+              pre = '"'
+              post = '"'
             else:
               pre = """"""
               post = """"""
@@ -250,20 +272,21 @@ while True:
               for f in os.listdir(sls):
                 slss[sls].append(f)
             for i in slss:
+              ei = i.replace(" ","%20")
               if found != True:
                 if cmd in slss[i]:
-                  os.system(f"""{pre}{i}/{cmd}{post} {joiner(aargs)}""")
+                  execute(f"""{pre}{ei}/{cmd}{post} {joiner(aargs)}""")
                   glfo = True
                   found = True
                 elif cmd + ending in slss[i]:
-                  os.system(f"""{pre}{i}/{cmd}{ending} {post} {joiner(aargs)}""")
+                  execute(f"""{pre}{ei}/{cmd}{ending} {post} {joiner(aargs)}""")
                   glfo = True
                   found = True
                 elif cmd + """.py""" in slss[i]:
                   pargs = [str(Path.cwd()),"""ash"""]
                   for parg in pargs:
                     aargs.append(parg)
-                  os.system(f"""python3 {i}/{cmd}.py {joiner(aargs)}""")
+                  execute(f"""python3 {ei}/{cmd}.py {joiner(aargs)}""")
                   glfo = True
                   found = True
       if glfo == False:
