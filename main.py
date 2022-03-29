@@ -248,8 +248,8 @@ while True:
                   os.system(f"""python3 {i}/{cmd}.py {joiner(aargs)}""")
                   glfo = True
                   found = True
-        if found == False:
-          show.builtin([f"""Unable to find `{cmd}`"""])
+      if glfo == False:
+        show.builtin([f"""Unable to find `{cmd}`"""])
 
   except KeyboardInterrupt:
     show.builtin(["""\nPlease type `exit` to exit"""])
