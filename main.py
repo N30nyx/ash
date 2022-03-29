@@ -198,50 +198,58 @@ while True:
       lfs = []
       for lf in os.listdir(os.getcwd()):
         lfs.append(lf)
+      glfo = False
       for ending in endings:
-        if cmd in lfs or cmd + ending in lfs:
-          if cmd.endswith(ending):
-            os.system(f"""{start}{cmd}{joiner(aargs)}""")
-            
-  
-  
-  
-          elif cmd + ending in lfs:
-            os.system(f"""{start}{cmd}{ending}{joiner(aargs)}""")
-          else:
-            show.builtin([f"""Did you mean `./{cmd}` ?"""])
-        else:
-          pre = """"""
-          post = """"""
-          if sys.platform.startswith("""win"""):
-            pre = 'cmd /c "'
-            post = '"'
+        if glfo != True:
+          if cmd in lfs or cmd + ending in lfs:
+            if cmd.endswith(ending):
+              os.system(f"""{start}{cmd}{joiner(aargs)}""")
+              glfo = True
+              
+    
+    
+    
+            elif cmd + ending in lfs:
+              os.system(f"""{start}{cmd}{ending}{joiner(aargs)}""")
+              glfo = True
+            else:
+              show.builtin([f"""Did you mean `./{cmd}` ?"""])
+              glfo = True
           else:
             pre = """"""
             post = """"""
-          found = False
-          slss = {}
-          for sls in ashrc["""symlinks"""]:
-            slss[sls] = []
-            for f in os.listdir(sls):
-              slss[sls].append(f)
-          for i in slss:
-            if found != True:
-              if cmd in slss[i]:
-                os.system(f"""{pre}{i}/{cmd}{post} {joiner(aargs)}""")
-                found = True
-              elif cmd + ending in slss[i]:
-                os.system(f"""{pre}{i}/{cmd}{ending} {post} 
-{joiner(aargs)}""")
-                found = True
-              elif cmd + """.py""" in slss[i]:
-                pargs = [str(Path.cwd()),"""ash"""]
-                for parg in pargs:
-                  aargs.append(parg)
-                os.system(f"""python3 {i}/{cmd}.py {joiner(aargs)}""")
-                found = True
-      if found == False:
-        show.builtin([f"""Unable to find `{cmd}`"""])
+            if sys.platform.startswith("""win"""):
+              pre = 'cmd /c "'
+              post = '"'
+            else:
+              pre = """"""
+              post = """"""
+            found = False
+            slss = {}
+            for sls in ashrc["""symlinks"""]:
+              slss[sls] = []
+              for f in os.listdir(sls):
+                slss[sls].append(f)
+            for i in slss:
+              if found != True:
+                if cmd in slss[i]:
+                  os.system(f"""{pre}{i}/{cmd}{post} {joiner(aargs)}""")
+                  glfo = True
+                  found = True
+                elif cmd + ending in slss[i]:
+                  os.system(f"""{pre}{i}/{cmd}{ending} {post} 
+  {joiner(aargs)}""")
+                  glfo = True
+                  found = True
+                elif cmd + """.py""" in slss[i]:
+                  pargs = [str(Path.cwd()),"""ash"""]
+                  for parg in pargs:
+                    aargs.append(parg)
+                  os.system(f"""python3 {i}/{cmd}.py {joiner(aargs)}""")
+                  glfo = True
+                  found = True
+        if found == False:
+          show.builtin([f"""Unable to find `{cmd}`"""])
 
   except KeyboardInterrupt:
     show.builtin(["""\nPlease type `exit` to exit"""])
