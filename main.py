@@ -8,7 +8,7 @@ import sys
 # get ~ and .bashrc but for ash
 
 def ashsrc(t=None,d=None):
-  
+
   fs = []
   x = """"""
   fp = str(Path.home()) + """/ashrc.json"""
@@ -19,14 +19,14 @@ def ashsrc(t=None,d=None):
     for f in os.listdir(str(Path.home())):
       fs.append(f)
     if """ashrc.json""" not in fs:
-      
-      
+
+
       x = open(fp,"""w+""")
       x.fp = fp
     else:
       x = open(fp,"""r""")
       x.fp = fp
-    
+
     return x
 
 def is_there(p=Path.cwd(),f=None):
@@ -55,7 +55,7 @@ try:
 
   if ashsrc().read() in ['',""""""]:
     os.system("""echo {} >> """ + str(Path.home()) + """/ashrc.json""")
-      
+
   ashrc = json.load(ashsrc())
   if """symlinks""" not in ashrc:
     ashrc["""symlinks"""] = []
@@ -69,7 +69,7 @@ try:
     ashrc["""globals"""] = {}
     ashsrc("""d""",ashrc)
     ashrc = json.load(ashsrc())
-  
+
   os.system(ashrc["""startup"""])
 except Exception as et:
   print(f"""Failed to load {str(Path.home())}/ashrc.json\nERROR: {et}""")
@@ -82,14 +82,20 @@ stdir = str(Path.cwd())
 while True:
   try:
     home = str(Path.home())
-    
+
     g = gbl.builtin()
     g["""home"""] = home
     g["""path"""] = str(Path.cwd())
-
+    g["ashdir"] = stdir
+    g["""globals"""] = str(g)
+    ashrc = json.load(ashsrc())
+    for gbli in ashrc["""globals"""]:
+      g[gbli] = ashrc["""globals"""][gbli]
 
     prefix = parse.builtin(prefixer,v,g,"""arg""")
     q =  input(prefix)
+    oq = q
+
     try:
       cmd = q.split(""" """)[0]
     except IndexError:
@@ -122,19 +128,16 @@ while True:
     try:
       aargs = q.split(""" """)[1:]
     except IndexError:
-      aargs = []  
-    g["""globals"""] = str(g)
-    ashrc = json.load(ashsrc())
-    for gbli in ashrc["""globals"""]:
-      g[gbli] = ashrc["""globals"""][gbli]
-    
+      aargs = []
 
-    
-      
-      
-  
 
-    
+
+
+
+
+
+
+
     if q.startswith("""exit""") or q.startswith("""quit"""):
       os.chdir(stdir)
       if arg == """""":
@@ -143,9 +146,10 @@ while True:
         exit(int(arg))
     elif q == "" or q == '':
       ok = "frenchbabyseal"
-      
+
     elif cmd in ["""cd"""]:
       os.chdir(arg)
+      g["path"] = str(Path.cwd())
     elif q.startswith("""#"""):
       q = """"""
     elif q.startswith("""@"""):
@@ -157,20 +161,20 @@ while True:
       if cmd in ["""@export""","""@global"""]:
         exp.builtin([ashsrc,arg,joiner(args)])
       if cmd in ["""@ashrc""","""@config"""]:
-        ashrcm.builtin([ashsrc,arg,joiner(args)])
+        ashrcm.builtin([ashsrc,arg,joiner(oq.split(""" """)[2:])])
       if cmd in ["""@reload"""]:
         os.execv(sys.executable, ['python'] + sys.argv)
 
     elif q.startswith("""$"""):
       # $ will be var defining
-      
+
       var = cmd.replace("""$""","""""",1)
       if arg == """""" and var in v:
         show.builtin([v[var]])
       op = arg
       c = joiner(args)
-  
-  
+
+
       exec(f"""{var} {op} {c}""",{},v)
       v[var] = str(v[var])
     elif q.startswith("""%"""):
@@ -209,10 +213,10 @@ while True:
             if cmd.endswith(ending):
               os.system(f"""{start}{cmd}{joiner(aargs)}""")
               glfo = True
-              
-    
-    
-    
+
+
+
+
             elif cmd + ending in lfs:
               os.system(f"""{start}{cmd}{ending}{joiner(aargs)}""")
               glfo = True
