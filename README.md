@@ -7,6 +7,9 @@ git clone https://github.com/n30nyx/ash
 cd ash && python3 main.py
 ```
 
+### Coreutils:
+There are a few pre-prepared coreutils, add them to the symlinks yourself if you wish to use them
+
 ### Usage:
 There are several builtins into ASH
 
@@ -79,3 +82,6 @@ exit
 ### Todo:
 - Add .ash file support
 - Package shell properly
+- Add download coreutils
+- Add `@pkg`
+- @update
