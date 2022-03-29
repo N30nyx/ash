@@ -14,10 +14,14 @@ class color:
 cwd = sys.argv[-2]
 ash = sys.argv[-1]
 h = sys.argv[1]
+if h == "ash":
+    h = None
 tp = ""
 files = []
 folders = []
 misc = []
+if h != None and h not in ["-h","--hidden"]:
+    cwd = h
 for file in os.listdir(cwd):
   if h in ["-h","--hidden"]:
     if os.path.isfile(cwd + "/" + file):

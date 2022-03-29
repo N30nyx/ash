@@ -69,6 +69,10 @@ try:
     ashrc["""globals"""] = {}
     ashsrc("""d""",ashrc)
     ashrc = json.load(ashsrc())
+  if """poststart""" not in ashrc:
+    ashrc["""poststart"""] = ""
+    ashsrc("""d""",ashrc)
+    ashrc = json.load(ashsrc())
 
   os.system(ashrc["""startup"""])
 except Exception as et:
@@ -79,6 +83,7 @@ try:
 except KeyError:
   prefixer = str("""%path% ~ """)
 stdir = str(Path.cwd())
+started = False
 while True:
   try:
     home = str(Path.home())
@@ -91,6 +96,10 @@ while True:
     ashrc = json.load(ashsrc())
     for gbli in ashrc["""globals"""]:
       g[gbli] = ashrc["""globals"""][gbli]
+    if started == False:
+        poststart = parse.builtin(json.load(ashsrc())["""poststart"""],v,g,"""arg""")
+        os.system(poststart)
+        started = True
 
     prefix = parse.builtin(prefixer,v,g,"""arg""")
     q =  input(prefix)
@@ -164,6 +173,8 @@ while True:
         ashrcm.builtin([ashsrc,arg,joiner(oq.split(""" """)[2:])])
       if cmd in ["""@reload"""]:
         os.execv(sys.executable, ['python'] + sys.argv)
+      if cmd in ["@update"]:
+        os.system(f"cd {stdir} && git pull")
 
     elif q.startswith("""$"""):
       # $ will be var defining
