@@ -78,6 +78,7 @@ try:
   prefixer = json.load(ashsrc())["""prefix"""]
 except KeyError:
   prefixer = str("""%path% ~ """)
+stdir = str(Path.cwd())
 while True:
   try:
     home = str(Path.home())
@@ -135,6 +136,7 @@ while True:
 
     
     if q.startswith("""exit""") or q.startswith("""quit"""):
+      os.chdir(stdir)
       if arg == """""":
         exit()
       else:
