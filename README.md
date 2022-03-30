@@ -4,11 +4,19 @@
 Make sure to install python then:
 ```bash
 git clone https://github.com/n30nyx/ash
-cd ash && python3 main.py
+cd ash && python3 ash.py
 ```
 
 ### Coreutils:
 There are a few pre-prepared coreutils, add them to the symlinks yourself if you wish to use them
+
+### From a file:
+`python3 ash.py <file>`
+
+
+if the file does not end with `.ash`
+
+ash will search for the file + `.ash`
 
 ### Usage:
 There are several builtins into ASH
@@ -42,7 +50,7 @@ These include:
 # for example:
 @ashrc !add:symlinks /home/runner/ash/test_bin
 # remember, your symlinks CANNOT end with a `/`
-# set a prefix instead of <path> ~ 
+# set a prefix instead of <path> ~
 @ashrc prefix `~> `
 #NOTE: you don't have to include the `, that was just to show the space
 # Reset a value:

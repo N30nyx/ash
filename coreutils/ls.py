@@ -1,6 +1,25 @@
 import os
 import sys
 # comment
+def execute(c):
+    import subprocess
+    process = None
+    try:
+        bashCommand = c
+        bc = bashCommand.split()
+        nc = []
+        for item in bc:
+            item = item.replace("%20"," ")
+            nc.append(item)
+        process = subprocess.run(c.replace("%20"," "), check=True,text=True)
+        o = process.stdout
+        if o != None:
+            print(o)
+    except Exception as e:
+        if str(e).endswith("1.") == False:
+
+            print(f"SHELL ERROR: `{e}`")
+    return
 class color:
    PURPLE = '\033[95m'
    CYAN = '\033[96m'
@@ -48,4 +67,4 @@ for fo in folders:
   tp += f"{color.GREEN}{fo}{color.END} "
 for m in misc:
   tp += f"{color.RED}{m}{color.END} "
-print(tp)
+execute("echo " + tp)
