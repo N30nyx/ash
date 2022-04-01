@@ -27,7 +27,7 @@ def ashsrc(t=None,d=None):
       x = open(fp,"""w+""")
       x.fp = fp
     else:
-      x = open(fp,"""r""")
+      x = open(fp,"""r+""")
       x.fp = fp
 
     return x
@@ -63,7 +63,8 @@ class Ash:
         module = __import__(filename)
         locals()[name] = module
         globals()[name] = module
-    def execute(c):
+    def execute(c,s=False):
+        
         import subprocess
         process = None
         try:
@@ -79,15 +80,16 @@ class Ash:
                 print(o)
         except Exception as e:
             if str(e).endswith("1.") == False:
+                if s == False:
 
-                print(f"SHELL ERROR: `{e}`")
+                  print(f"SHELL ERROR: `{e}`")
         return
     def ashrc():
         v = {}
         try:
 
           if ashsrc().read() in ['',""""""]:
-            execute("""echo {} >> """ + str(Path.home()) + """/ashrc.json""")
+            ashsrc().write("{}")
 
           ashrc = json.load(ashsrc())
           if """symlinks""" not in ashrc:
@@ -124,7 +126,7 @@ class Ash:
         ashrct,prefixt=Ash.ashrc()
         v = {}
         g = gbl.builtin()
-        v,g = Ash.exec("",v,g,ashrct)
+        v,g = Ash.exec("@bash",v,g,ashrct,True)
         while True:
           try:
 
@@ -134,7 +136,7 @@ class Ash:
 
             if started == False:
                 poststart = parse.builtin(json.load(ashsrc())["""poststart"""],{},g,"""arg""")
-                Ash.execute(poststart)
+                Ash.execute(poststart,True)
                 started = True
 
             prefix = parse.builtin(prefix,v,g,"""arg""")
@@ -148,7 +150,8 @@ class Ash:
         ashrct,prefixt=Ash.ashrc()
         v = {}
         g = gbl.builtin()
-        v,g = Ash.exec("",v,g,ashrct)
+        v,g = Ash.exec(ashrct["poststart"],v,g,ashrct)
+        
         if path.endswith(".ash") == False:
             path += ".ash"
         ashrc,prefix=Ash.ashrc()
@@ -156,16 +159,16 @@ class Ash:
             for q in af.readlines():
                 v,g = Ash.exec(q,v,g,ashrc)
 
-    def exec(q,v={},g=gbl.builtin(),ashrc=None):
+    def exec(q,v={},g=gbl.builtin(),ashrc=None,s=False):
         stdir = str(Path.cwd())
 
 
         if ashrc == None:
             ashrc,prefix = Ash.ashrc()
-        return Ash.eval(v,ashrc,q,stdir,g)
+        return Ash.eval(v,ashrc,q,stdir,g,s)
 
 
-    def eval(v,ashrc,q,stdir,g):
+    def eval(v,ashrc,q,stdir,g,s):
         home = str(Path.home())
 
         g = gbl.builtin()
@@ -261,15 +264,15 @@ class Ash:
           if cmd in ["""@print"""]:
             show.builtin([joiner(aargs)])
           if cmd in ["""@echo"""]:
-            Ash.execute("echo " + joiner(aargs))
+            Ash.execute("echo " + joiner(aargs),s)
           if cmd in ["""@export""","""@global"""]:
             exp.builtin([ashsrc,arg,joiner(args)])
           if cmd in ["""@ashrc""","""@config"""]:
             ashrcm.builtin([ashsrc,arg,joiner(oq.split(""" """)[2:])])
           if cmd in ["""@reload"""]:
-            os.execv(sys.executable, ['python'] + sys.argv)
+            os.execv(sys.executable, ['python'] + sys.argv,s)
           if cmd in ["@update"]:
-            Ash.execute(f"cd {stdir} && git pull")
+            Ash.execute(f"cd {stdir} && git pull",s)
 
         elif q.startswith("""$"""):
           # $ will be var defining
@@ -297,9 +300,9 @@ class Ash:
         elif q.startswith("""./"""):
           f = cmd.replace("""./""","""""")
           if sys.platform.startswith("""win"""):
-            Ash.execute(f"""{f} {joiner(aargs)}""")
+            Ash.execute(f"""{f} {joiner(aargs)}""",s)
           else:
-            Ash.execute(q)
+            Ash.execute(q,s)
         else:
           endings = """"""
           start = """"""
@@ -317,14 +320,14 @@ class Ash:
             if glfo != True:
               if cmd in lfs or cmd + ending in lfs:
                 if cmd.endswith(ending):
-                  Ash.execute(f"""{start}{cmd}{joiner(aargs)}""")
+                  Ash.execute(f"""{start}{cmd}{joiner(aargs)}""",s)
                   glfo = True
 
 
 
 
                 elif cmd + ending in lfs:
-                  Ash.execute(f"""{start}{cmd}{ending}{joiner(aargs)}""")
+                  Ash.execute(f"""{start}{cmd}{ending}{joiner(aargs)}""",s)
                   glfo = True
                 else:
                   show.builtin([f"""Did you mean `./{cmd}` ?"""])
@@ -348,11 +351,11 @@ class Ash:
                   ei = i.replace(" ","%20")
                   if found != True:
                     if cmd in slss[i]:
-                      Ash.execute(f"""{pre}{ei}/{cmd}{post} {joiner(aargs)}""")
+                      Ash.execute(f"""{pre}{ei}/{cmd}{post} {joiner(aargs)}""",s)
                       glfo = True
                       found = True
                     elif cmd + ending in slss[i]:
-                      Ash.execute(f"""{pre}{ei}/{cmd}{ending} {post} {joiner(aargs)}""")
+                      Ash.execute(f"""{pre}{ei}/{cmd}{ending} {post} {joiner(aargs)}""",s)
                       glfo = True
                       found = True
                     elif cmd + """.py""" in slss[i]:
@@ -360,7 +363,7 @@ class Ash:
                       pargs = [str(Path.cwd()),"""ash"""]
                       for parg in pargs:
                         aargs.append(parg)
-                      Ash.execute(f"""python3 {ei}/{cmd}.py {joiner(aargs)}""")
+                      Ash.execute(f"""python3 {ei}/{cmd}.py {joiner(aargs)}""",s)
                       glfo = True
                       found = True
           if glfo == False:

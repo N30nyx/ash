@@ -1,6 +1,7 @@
 import os
 import sys
 # comment
+
 def execute(c):
     import subprocess
     process = None
@@ -20,6 +21,12 @@ def execute(c):
 
             print(f"SHELL ERROR: `{e}`")
     return
+def colorp(c):
+  if sys.platform.startswith("win"):
+    execute("echo " + c)
+  else:
+    print(c)
+    
 class color:
    PURPLE = '\033[95m'
    CYAN = '\033[96m'
@@ -67,4 +74,5 @@ for fo in folders:
   tp += f"{color.GREEN}{fo}{color.END} "
 for m in misc:
   tp += f"{color.RED}{m}{color.END} "
-execute("echo " + tp)
+
+colorp(tp)
