@@ -177,7 +177,15 @@ class Ash:
 
         for c in color.palette:
             g[f"color.{c}"] = color.palette[c]
-        g["username"] = os.getlogin()
+        try:
+          g["username"] = os.getlogin()
+        except:
+            if os.environ.get('USERNAME') != None:
+              g["username"] = os.environ.get('USERNAME')
+            elif os.environ.get('USER') != None:
+              g["username"] = os.environ.get('USER')
+            else:
+              g["username"] = "unable to find username"
 
         ashrc,prefix=Ash.ashrc()
 
