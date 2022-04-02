@@ -544,7 +544,7 @@ import os
 import sys
 # icons
 class icons:
-  FILE = ''
+  FILE = '📝'
   DIR = '📁'
   SUBDIR = '📂'
   
@@ -562,8 +562,8 @@ class icons:
   WIN_EXECUTABLE = '❄️'
   
   C_LANG = '©️'
-  CPP = '©️'
-  CS = '©️'
+  CPP = '©️+'
+  CS = '©️#'
   CLOJURE = '☯️'
   PYTHON = '🐍'
   
@@ -1104,8 +1104,11 @@ def main():
     for pattern in args.paths:
         if len(args.paths) > 1 and '*' not in pattern:
             print('%s:' % pattern)
-        pattern = cwd
+        
 
+        pattern = cwd
+        if pattern.endswith("/") == False:
+          pattern += "/"
         process_pattern(pattern, args)
 
 
