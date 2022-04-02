@@ -362,7 +362,7 @@ class Ash:
                     elif cmd + """.py""" in slss[i]:
 
 
-                      pyf = open(f"{ei}/{cmd}.py","r+")
+                      pyf = open(f"{ei}/{cmd}.py","r",encoding="utf8")
                       pyfc = pyf.read()
                       pyfc = pyfc.replace('"ash-shell"','locals()["ash-shell"]').replace('"ash-shell-path"','locals()["ash-shell-path"]').replace('"is-ash-shell"','locals()["is-ash-shell"]').replace("sys.argv",'locals()["ash-argv"]')
                       d = {}
