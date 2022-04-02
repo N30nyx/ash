@@ -26,7 +26,7 @@ def colorp(c):
     execute("echo " + c)
   else:
     print(c)
-    
+
 class color:
    PURPLE = '\033[95m'
    CYAN = '\033[96m'
@@ -38,9 +38,15 @@ class color:
    BOLD = '\033[1m'
    UNDERLINE = '\033[4m'
    END = '\033[0m'
-cwd = sys.argv[-2]
-ash = sys.argv[-1]
-h = sys.argv[1]
+
+ash = "is-ash-shell"
+Ash = "ash-shell"
+cwd = "ash-shell-path"
+
+try:
+    h = sys.argv[1]
+except IndexError:
+    h = ""
 if h == "ash":
     h = None
 tp = ""

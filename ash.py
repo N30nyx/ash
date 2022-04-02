@@ -64,7 +64,8 @@ class Ash:
         locals()[name] = module
         globals()[name] = module
     def execute(c,s=False):
-        
+        print(c)
+
         import subprocess
         process = None
         try:
@@ -151,7 +152,7 @@ class Ash:
         v = {}
         g = gbl.builtin()
         v,g = Ash.exec(ashrct["poststart"],v,g,ashrct)
-        
+
         if path.endswith(".ash") == False:
             path += ".ash"
         ashrc,prefix=Ash.ashrc()
@@ -363,7 +364,19 @@ class Ash:
                       pargs = [str(Path.cwd()),"""ash"""]
                       for parg in pargs:
                         aargs.append(parg)
-                      Ash.execute(f"""python3 {ei}/{cmd}.py {joiner(aargs)}""",s)
+                      pyf = open(f"{ei}/{cmd}.py","r+")
+                      pyfc = pyf.read()
+                      pyfc = pyfc.replace('"ash-shell"','locals()["ash-shell"]').replace('"ash-shell-path"','locals()["ash-shell-path"]').replace('"is-ash-shell"','locals()["is-ash-shell"]')
+                      d = {}
+                      for gl in g:
+                          d[f"ash-global-{gl}"] = g[gl]
+                      for var in v:
+                          d[f"ash-local-{var}"] = v[var]
+                      d["ash-shell"] = Ash
+                      d["ash-shell-path"] = Path.cwd()
+                      d["is-ash-shell"] = True
+                      d = dict(globals(),**d)
+                      exec(pyfc,d,d)
                       glfo = True
                       found = True
           if glfo == False:
