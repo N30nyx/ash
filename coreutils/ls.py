@@ -14,8 +14,8 @@ import enum
 
 FALLBACK_TERMINAL_WIDTH = 80
 
-ENOENT = "lss: cannot access '%s': No such file or directory"
-ENOTDIR = "lss: '%s' is not a directory"
+ENOENT = "ls: cannot access '%s': No such file or directory"
+ENOTDIR = "ls: '%s' is not a directory"
 STOPITER = "'%s': broken reparse point encountered, iteration stopped"
 
 
@@ -550,7 +550,7 @@ class icons:
   
   SYMLINK_FILE = '🔗'
   SYMLINK_DIR = '🔗'
-  SYMLINK_PTR = '🔗'
+  SYMLINK_PTR = '➡️'
   
   ARCHIVE = '📦'
   AUDIO = '🎵'
