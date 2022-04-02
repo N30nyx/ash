@@ -361,12 +361,10 @@ class Ash:
                       found = True
                     elif cmd + """.py""" in slss[i]:
 
-                      pargs = [str(Path.cwd()),"""ash"""]
-                      for parg in pargs:
-                        aargs.append(parg)
+
                       pyf = open(f"{ei}/{cmd}.py","r+")
                       pyfc = pyf.read()
-                      pyfc = pyfc.replace('"ash-shell"','locals()["ash-shell"]').replace('"ash-shell-path"','locals()["ash-shell-path"]').replace('"is-ash-shell"','locals()["is-ash-shell"]')
+                      pyfc = pyfc.replace('"ash-shell"','locals()["ash-shell"]').replace('"ash-shell-path"','locals()["ash-shell-path"]').replace('"is-ash-shell"','locals()["is-ash-shell"]').replace("sys.argv",'locals()["ash-argv"]')
                       d = {}
                       for gl in g:
                           d[f"ash-global-{gl}"] = g[gl]
@@ -375,6 +373,10 @@ class Ash:
                       d["ash-shell"] = Ash
                       d["ash-shell-path"] = Path.cwd()
                       d["is-ash-shell"] = True
+                      agr = ["ash"]
+                      for ar in aargs:
+                        agr.append(ar)
+                      d["ash-argv"] = agr
                       d = dict(globals(),**d)
                       exec(pyfc,d,d)
                       glfo = True
