@@ -1,3 +1,4 @@
+#shell:ash:exec
 import colorsys
 import json
 import os
@@ -445,10 +446,10 @@ class color:
       is_windows_terminal = 'WT_SESSION' in os.environ
       if os.name == 'nt' and not (is_conemu or is_windows_terminal):
           os.system('color')
-  
+
       lss_path = os.path.dirname(os.path.realpath(__file__))
       custom_path = os.path.join(lss_path, 'lss_custom.json')
-  
+
       if os.path.exists(custom_path):
           with open(custom_path) as file:
               custom = json.load(file)
@@ -456,81 +457,81 @@ class color:
                   COLOR_SCHEME[Category[key.upper()]] = value
               for key, value in custom['size'].items():
                   SIZE[key] = value
-  
+
       # Generate gradients only if we're using long listing mode
       if long_listing:
           global SIZE_STEPS
           global SIZE_GRADIENT
-  
+
           SIZE_STEPS = [SIZE['maxsize'] * i for i in SIZE['thresholds']]
           start_rgb = tuple(i/255 for i in hex_to_rgb(SIZE['start_color']))
           end_rgb = tuple(i/255 for i in hex_to_rgb(SIZE['end_color']))
-  
+
           SIZE_GRADIENT = list(
               make_gradient(start_rgb, end_rgb, len(SIZE_STEPS) - 1)
           )
-  
-  
+
+
   def sizecolor(size):
       if size >= SIZE_STEPS[-1]:
           return SIZE_GRADIENT[-1]
-  
+
       for i, step in enumerate(SIZE_STEPS):
           if size < step:
               return SIZE_GRADIENT[i]
-  
-  
 
-  
-  
+
+
+
+
   def fmt(string, fg=None, bg=None, attributes=None):
       if not attributes:
           attributes = tuple()
-  
+
       if isinstance(fg, str):
           fg_fmt = ANSI % COLORS[fg] if fg else ''
       else:
           fg_fmt = FG24 % (fg[0], fg[1], fg[2]) if fg else ''
-  
+
       if isinstance(bg, str):
           bg_fmt = ANSI % BG_COLORS[bg] if bg else ''
       else:
           bg_fmt = BG24 % (bg[0], bg[1], bg[2]) if bg else ''
-  
+
       attrs_fmt = ''.join(ANSI % ATTRIBUTES[attr] for attr in attributes)
       return '%s%s%s%s%s' % (bg_fmt, fg_fmt, attrs_fmt, string, ANSI % RESET)
 
   def fmt_cat(string, category):
       return color.fmt(string, *COLOR_SCHEME[category])
-  
+
   def hex_to_rgb(code):
       code = code.lstrip('#')
       if len(code) != 6:
           raise ValueError
-  
+
       return int(code[:2], 16), int(code[2:4], 16), int(code[4:], 16)
-  
-  
+
+
   def make_gradient(start_rgb, end_rgb, steps):
       start = colorsys.rgb_to_hsv(*start_rgb)
       end = colorsys.rgb_to_hsv(*end_rgb)
       reverse = False
-  
+
       if end[0] < start[0]:
           start, end = end, start
           reverse = True
-  
+
       dist_forward = end[0] - start[0]
       dist_backwards = start[0] + (1 - end[0])
-  
+
       if dist_backwards < dist_forward:
           step_h = -dist_backwards / steps
       else:
           step_h = dist_forward / steps
-  
+
       step_s = (end[1] - start[1]) / steps
       step_v = (end[2] - start[2]) / steps
-  
+
       step_iter = range(steps+1) if not reverse else reversed(range(steps+1))
       for i in step_iter:
           h = start[0] + step_h * i
@@ -538,7 +539,7 @@ class color:
               h = 1 + h
           s = start[1] + step_s * i
           v = start[2] + step_v * i
-  
+
           yield tuple(i * 255 for i in colorsys.hsv_to_rgb(h, s, v))
 import os
 import sys
@@ -547,11 +548,11 @@ class icons:
   FILE = '📝'
   DIR = '📁'
   SUBDIR = '📂'
-  
+
   SYMLINK_FILE = '🔗'
   SYMLINK_DIR = '🔗'
   SYMLINK_PTR = '➡️'
-  
+
   ARCHIVE = '📦'
   AUDIO = '🎵'
   CONFIG = '⚙️'
@@ -560,13 +561,13 @@ class icons:
   SUBL = '✏️'
   VIDEO = '⏯️'
   WIN_EXECUTABLE = '❄️'
-  
+
   C_LANG = '©️'
   CPP = '©️+'
   CS = '©️#'
   CLOJURE = '☯️'
   PYTHON = '🐍'
-  
+
   EXTENSIONS = {
       '.apk': '🎁',
       '.c': C_LANG,
@@ -608,7 +609,7 @@ class icons:
       'ps1': SHELL,
       'sh': SHELL,
       'shell': SHELL,
-  
+
       # Everything below needs to be in sync with EXTENSION_TO_CATEGORY
       '.7z': ARCHIVE,
       '.a': ARCHIVE,
@@ -640,11 +641,11 @@ class icons:
       '.xz': ARCHIVE,
       '.zip': ARCHIVE,
       '.zipx': ARCHIVE,
-  
+
       '.bat': WIN_EXECUTABLE,
       '.exe': WIN_EXECUTABLE,
       '.msi': WIN_EXECUTABLE,
-  
+
       '.3dm': IMAGE,
       '.3ds': IMAGE,
       '.ai': IMAGE,
@@ -669,7 +670,7 @@ class icons:
       '.tiff': IMAGE,
       '.webp': IMAGE,
       '.xcf': IMAGE,
-  
+
       '.aac': AUDIO,
       '.aiff': AUDIO,
       '.ape': AUDIO,
@@ -690,7 +691,7 @@ class icons:
       '.wav': AUDIO,
       '.wma': AUDIO,
       '.xm': AUDIO,
-  
+
       '.3g2': VIDEO,
       '.3gp': VIDEO,
       '.aaf': VIDEO,
@@ -1104,7 +1105,7 @@ def main():
     for pattern in args.paths:
         if len(args.paths) > 1 and '*' not in pattern:
             print('%s:' % pattern)
-        
+
 
         pattern = cwd
         if pattern.endswith("/") == False:

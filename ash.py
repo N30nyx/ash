@@ -64,7 +64,7 @@ class Ash:
         locals()[name] = module
         globals()[name] = module
     def execute(c,s=False):
-        print(c)
+
 
         import subprocess
         process = None
@@ -147,6 +147,7 @@ class Ash:
             show.builtin(["""\nPlease type `exit` to exit"""])
           except Exception as e:
             show.builtin([f"""ASH ERROR: `{e}`"""])
+
     def file(path):
         ashrct,prefixt=Ash.ashrc()
         v = {}
@@ -360,25 +361,54 @@ class Ash:
                       glfo = True
                       found = True
                     elif cmd + """.py""" in slss[i]:
-
-
-                      pyf = open(f"{ei}/{cmd}.py","r",encoding="utf8")
+                        #shebang time!
+                      pyft = open(f"{ei}/{cmd}.py","r+",encoding="utf-8")
+                      lnes = pyft.readlines()
+                      lnes = lnes[:6]
+                      lns = []
+                      for l in lnes:
+                          lns.append(l.rstrip())
+                      shbngs = ["#shell:ash","#shell:ash:api","#shell:ash:exec"]
+                      pyf = open(f"{ei}/{cmd}.py","r+",encoding="utf-8")
                       pyfc = pyf.read()
-                      pyfc = pyfc.replace('"ash-shell"','locals()["ash-shell"]').replace('"ash-shell-path"','locals()["ash-shell-path"]').replace('"is-ash-shell"','locals()["is-ash-shell"]').replace("sys.argv",'locals()["ash-argv"]')
-                      d = {}
-                      for gl in g:
-                          d[f"ash-global-{gl}"] = g[gl]
-                      for var in v:
-                          d[f"ash-local-{var}"] = v[var]
-                      d["ash-shell"] = Ash
-                      d["ash-shell-path"] = Path.cwd()
-                      d["is-ash-shell"] = True
-                      agr = ["ash"]
-                      for ar in aargs:
-                        agr.append(ar)
-                      d["ash-argv"] = agr
-                      d = dict(globals(),**d)
-                      exec(pyfc,d,d)
+                      pyfc = pyfc.replace('"ash-shell"','locals()["ash-shell"]').replace('"ash-shell-path"','locals()["ash-shell-path"]').replace('"is-ash-shell"','locals()["is-ash-shell"]').replace("sys.argv",'locals()["ash-argv"]').replace("import sys",'import sys\nsys.argv = locals()["ash-argv"]')
+                      if "#shell:ash" in lns:
+                        d = {}
+                        d["ash-shell"] = Ash
+                        agr = ["ash"]
+                        for ar in aargs:
+                          agr.append(ar)
+                        d["ash-argv"] = agr
+                        d = dict(globals(),**d)
+                        try:
+                            exec(pyfc,d,d)
+                        except BaseException:
+                            print("")
+                        except Exception as e:
+                            print(f"RUNTIME ERROR @ {ei}/{cmd}.py:\n`{e}`")
+                      elif "#shell:ash:api" in lns or "#shell:ash:exec" in lns:
+                          d = {}
+                          for gl in g:
+                              d[f"ash-global-{gl}"] = g[gl]
+                          for var in v:
+                              d[f"ash-local-{var}"] = v[var]
+                          d["ash-shell"] = Ash
+                          d["ash-shell-path"] = Path.cwd()
+                          d["is-ash-shell"] = True
+                          agr = ["ash"]
+                          for ar in aargs:
+                            agr.append(ar)
+                          d["ash-argv"] = agr
+                          d = dict(globals(),**d)
+                          try:
+                              exec(pyfc,d,d)
+                          except BaseException:
+                              print("")
+                          except Exception as e:
+                              print(f"RUNTIME ERROR @ {ei}/{cmd}.py:\n`{e}`")
+                      else:
+                          flg = joiner(aargs)
+                          Ash.execute(f"python3 {ei}/{cmd}.py {flg}")
                       glfo = True
                       found = True
           if glfo == False:
